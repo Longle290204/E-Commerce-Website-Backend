@@ -4,27 +4,42 @@ import {
   UploadedFile,
   UseInterceptors,
   Body,
+  Res,
   Get,
-  Delete,
   Param,
+  Delete,
   Query,
   Put,
 } from '@nestjs/common';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateProductDto } from './dto/create~product.dto';
 import { ProductService } from './product.service';
 import { HttpStatus } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
 import { Product } from './product~entity';
-import { GetFilterDto } from './dto/get~product.dto';/*  */
+import { GetFilterDto } from './dto/get~product.dto';
 import { UpdateProduct } from './dto/update~product.dto';
-
 @Controller('products')
 export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('image')) // xử lý file ảnh
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads',
+        filename: (req, file, callback) => {
+          const uniqueSuffix =
+            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const ext = extname(file.originalname);
+          const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
+          callback(null, filename);
+        },
+      }),
+    }),
+  )
   async createProduct(
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() image: Express.Multer.File,
@@ -32,7 +47,6 @@ export class ProductController {
     if (!image) {
       throw new HttpException('File is required.', HttpStatus.BAD_REQUEST);
     }
-
     try {
       const product = await this.productService.createProduct(
         createProductDto,
