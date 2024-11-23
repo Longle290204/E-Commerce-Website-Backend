@@ -4,8 +4,14 @@ import { TasksService } from './tasks/tasks.service';
 import { TasksModule } from './tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule, ConfigService} from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configValidateSchema } from './tasks/config.schema'; // Joi schema
+import { CategoryController } from './category/category.controller';
+import { CategoryModule } from './category/category.module';
+import { CategoryService } from './category/category.service';
+import { ProductController } from './products/product.controller';
+import { ProductModule } from './products/product.module';
+import { ProductService } from './products/product.service';
 
 @Module({
   imports: [
@@ -17,6 +23,8 @@ import { configValidateSchema } from './tasks/config.schema'; // Joi schema
       // isGlobal: true,
       // validationSchema: configValidateSchema,
     }),
+    CategoryModule,
+    ProductModule,
     TasksModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -51,7 +59,7 @@ import { configValidateSchema } from './tasks/config.schema'; // Joi schema
     }),
     AuthModule,
   ],
-  providers: [TasksService],
-  controllers: [TasksController],
+  providers: [TasksService, CategoryService, ProductService],
+  controllers: [TasksController, CategoryController, ProductController],
 })
 export class AppModule {}
