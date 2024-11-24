@@ -12,6 +12,9 @@ import { CategoryService } from './category/category.service';
 import { ProductController } from './products/product.controller';
 import { ProductModule } from './products/product.module';
 import { ProductService } from './products/product.service';
+import { SlideBannerController } from './slide-banner/slide-banner.controller';
+import { SlideBannerModule } from './slide-banner/slide-banner.module';
+import { SlideBannerService } from './slide-banner/slide-banner.service';
 
 @Module({
   imports: [
@@ -26,6 +29,7 @@ import { ProductService } from './products/product.service';
     CategoryModule,
     ProductModule,
     TasksModule,
+    SlideBannerModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -59,7 +63,17 @@ import { ProductService } from './products/product.service';
     }),
     AuthModule,
   ],
-  providers: [TasksService, CategoryService, ProductService],
-  controllers: [TasksController, CategoryController, ProductController],
+  providers: [
+    TasksService,
+    CategoryService,
+    ProductService,
+    SlideBannerService,
+  ],
+  controllers: [
+    TasksController,
+    CategoryController,
+    ProductController,
+    SlideBannerController,
+  ],
 })
 export class AppModule {}

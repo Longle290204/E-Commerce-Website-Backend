@@ -10,8 +10,9 @@ async function bootstrap() {
   const logger = new Logger();
   const app = await NestFactory.create(AppModule);
   app.enableCors(); // Kích hoạt CORS
-  app.use('./uploads', express.static('uploads'));
+  // app.use('./uploads', express.static('uploads'));
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
+  app.use('/slidebanners', express.static(join(__dirname, '..', 'slidebanners')));
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformInterceptor());
   const port = 3002;
