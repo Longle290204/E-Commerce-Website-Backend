@@ -12,7 +12,10 @@ async function bootstrap() {
   app.enableCors(); // Kích hoạt CORS
   // app.use('./uploads', express.static('uploads'));
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
-  app.use('/slidebanners', express.static(join(__dirname, '..', 'slidebanners')));
+  app.use(
+    '/slidebanners',
+    express.static(join(__dirname, '..', 'slidebanners')),
+  );
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new TransformInterceptor());
   const port = 3002;
@@ -20,4 +23,3 @@ async function bootstrap() {
   logger.log(`Application listening on port ${port}`);
 }
 bootstrap();
- 
