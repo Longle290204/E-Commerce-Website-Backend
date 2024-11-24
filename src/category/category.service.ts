@@ -20,7 +20,7 @@ export class CategoryService {
   ): Promise<Category> {
     // Lấy danh mục cha từ cơ sở dữ liệu
     const parentCategory = await this.categoryRepository.findOneBy({
-      // id: parentId,
+      id: parentId,
     });
     
     if (!parentCategory) {
