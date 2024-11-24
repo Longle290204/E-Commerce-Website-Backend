@@ -12,6 +12,11 @@ export class CategoryController {
     return this.categoryService.createCategory(name);
   }
 
+  // @Get()
+  // async getCategories() {
+
+  // }
+
   @Get()
   async getAllCategories(): Promise<Category[]> {
     return this.categoryService.getAllCategories();

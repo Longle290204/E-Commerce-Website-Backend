@@ -14,8 +14,31 @@ export class CategoryService {
     return await this.categoryRepository.save(category);
   }
 
+  async createSubcategory(
+    parentId: number,
+    subcategoryName: string,
+  ): Promise<Category> {
+    // Lấy danh mục cha từ cơ sở dữ liệu
+    const parentCategory = await this.categoryRepository.findOneBy({
+      id: parentId,
+    });
+    
+    if (!parentCategory) {
+      throw new NotFoundException(`Category with ID ${parentId} not found`);
+    }
+
+    // Tạo danh mục con
+    const subcategory = this.categoryRepository.create({
+      name: subcategoryName,
+      parent: parentCategory,
+    });
+
+    // Lưu vào cơ sở dữ liệu
+    return this.categoryRepository.save(subcategory);
+  }
+
   async getAllCategories(): Promise<Category[]> {
-    return await this.categoryRepository.find();
+    return this.categoryRepository.find({ relations: ['subcategories'] });
   }
 
   async getCategoryById(id: string): Promise<Category> {

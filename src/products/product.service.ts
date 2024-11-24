@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { CreateProductDto } from './dto/create~product.dto';
-import { Product } from './product~entity';
+import { Product } from './Entities/product~entity';
 import { NotFoundException } from '@nestjs/common';
 import { GetFilterDto } from './dto/get~product.dto';
 import { In } from 'typeorm';

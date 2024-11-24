@@ -18,7 +18,7 @@ import { CreateProductDto } from './dto/create~product.dto';
 import { ProductService } from './product.service';
 import { HttpStatus } from '@nestjs/common';
 import { HttpException } from '@nestjs/common';
-import { Product } from './product~entity';
+import { Product } from './Entities/product~entity';
 import { GetFilterDto } from './dto/get~product.dto';
 import { UpdateProduct } from './dto/update~product.dto';
 @Controller('products')
@@ -30,13 +30,6 @@ export class ProductController {
     FileInterceptor('image', {
       storage: diskStorage({
         destination: './uploads',
-        filename: (req, file, callback) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
-          callback(null, filename);
-        },
       }),
     }),
   )
@@ -103,7 +96,13 @@ export class ProductController {
   }
 
   @Put('/:id/image/name/price')
-  @UseInterceptors(FileInterceptor('image')) // xử lý file ảnh
+  @UseInterceptors(
+    FileInterceptor('image', {
+      storage: diskStorage({
+        destination: './uploads',
+      }),
+    }),
+  ) // xử lý file ảnh
   updateProduct(
     @Param('id') id: string,
     @Body() updateProduct: UpdateProduct,

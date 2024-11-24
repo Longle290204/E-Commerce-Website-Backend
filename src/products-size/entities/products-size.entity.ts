@@ -1,4 +1,4 @@
-import { Product } from 'src/products/product~entity';
+import { Product } from 'src/products/Entities/product~entity';
 import { Entity, JoinColumn, PrimaryGeneratedColumn } from 'typeorm';
 import { ManyToOne, Column } from 'typeorm';
 
