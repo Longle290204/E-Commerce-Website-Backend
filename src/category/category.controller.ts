@@ -12,10 +12,13 @@ export class CategoryController {
     return this.categoryService.createCategory(name);
   }
 
-  // @Get()
-  // async getCategories() {
-
-  // }
+  @Post('/subcategory/:id')
+  async createSubCategory(
+    @Body('subCategoryName') subCategoryName: string,
+    @Param('id') parentId: string,
+  ): Promise<Category> {
+    return this.categoryService.createSubCategory(subCategoryName, parentId);
+  }
 
   @Get()
   async getAllCategories(): Promise<Category[]> {

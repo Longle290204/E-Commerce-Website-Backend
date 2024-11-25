@@ -1,11 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Category } from './entities/category~entity';
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class CategoryService {
   private categoryRepository = this.dataSource.getRepository(Category);
   constructor(private dataSource: DataSource) {}
+
+  // <===================CREATE CATEGORY======================>
 
   async createCategory(name: string): Promise<Category> {
     const category = this.categoryRepository.create({
@@ -14,28 +17,32 @@ export class CategoryService {
     return await this.categoryRepository.save(category);
   }
 
-  async createSubcategory(
-    parentId: number,
-    subcategoryName: string,
+  // <===================CREATE SUBCATEGORY======================>
+
+  async createSubCategory(
+    subCategoryName: string,
+    parentId: string,
   ): Promise<Category> {
     // Lấy danh mục cha từ cơ sở dữ liệu
-    const parentCategory = await this.categoryRepository.findOneBy({
-      id: parentId,
+    const parentCategory = await this.categoryRepository.findOne({
+      where: { id: parentId },
     });
-    
-    if (!parentCategory) {
-      throw new NotFoundException(`Category with ID ${parentId} not found`);
-    }
 
+    if (!parentCategory) {
+      throw new NotFoundException(
+        `Parent category with ID ${parentId} not found`,
+      );
+    }
     // Tạo danh mục con
-    const subcategory = this.categoryRepository.create({
-      name: subcategoryName,
+    const subCategory = this.categoryRepository.create({
+      name: subCategoryName,
       parent: parentCategory,
     });
-
     // Lưu vào cơ sở dữ liệu
-    return this.categoryRepository.save(subcategory);
+    return await this.categoryRepository.save(subCategory);
   }
+
+  // <===================GET ALL CATEGORIES======================>
 
   async getAllCategories(): Promise<Category[]> {
     return this.categoryRepository.find({ relations: ['subcategories'] });
@@ -48,6 +55,8 @@ export class CategoryService {
     }
     return find;
   }
+
+  // <===================DELETE CATEGORY======================>
 
   async deleteCategory(id: string): Promise<void> {
     const result = await this.categoryRepository.delete(id);

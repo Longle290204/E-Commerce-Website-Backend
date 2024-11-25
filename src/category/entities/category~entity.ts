@@ -16,7 +16,10 @@ export class Category {
   @Column()
   name: string;
 
-  @ManyToMany((_type) => Product, (product) => product.categories)
+  @ManyToMany((_type) => Product, (product) => product.categories, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   products: Product[];
 
   @ManyToOne((_type) => Category, (category) => category.subcategories)
