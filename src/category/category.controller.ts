@@ -22,7 +22,7 @@ export class CategoryController {
 
   @Get()
   async getAllCategories(): Promise<Category[]> {
-    return this.categoryService.getAllCategories();
+    return await this.categoryService.getAllCategories();
   }
 
   @Get('/:id')
@@ -30,8 +30,9 @@ export class CategoryController {
     return this.categoryService.getCategoryById(id);
   }
 
-  @Delete()
+  @Delete('/:id')
   async deleteCategory(@Param('id') id: string): Promise<void> {
     return this.categoryService.deleteCategory(id);
   }
 }
+ 

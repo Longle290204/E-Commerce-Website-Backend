@@ -1,14 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Category } from './entities/category~entity';
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
 
 @Injectable()
 export class CategoryService {
   private categoryRepository = this.dataSource.getRepository(Category);
   constructor(private dataSource: DataSource) {}
 
-  // <===================CREATE CATEGORY======================>
+  // <=================== CREATE CATEGORY ======================>
 
   async createCategory(name: string): Promise<Category> {
     const category = this.categoryRepository.create({
@@ -17,7 +16,7 @@ export class CategoryService {
     return await this.categoryRepository.save(category);
   }
 
-  // <===================CREATE SUBCATEGORY======================>
+  // <=================== CREATE SUBCATEGORY ======================>
 
   async createSubCategory(
     subCategoryName: string,
@@ -42,11 +41,13 @@ export class CategoryService {
     return await this.categoryRepository.save(subCategory);
   }
 
-  // <===================GET ALL CATEGORIES======================>
+  // <=================== GET ALL CATEGORIES ======================>
 
   async getAllCategories(): Promise<Category[]> {
-    return this.categoryRepository.find({ relations: ['subcategories'] });
+    return await this.categoryRepository.find({ relations: ['subcategories'] });
   }
+
+  // <=================== GET CATEGORIES BY ID ======================>
 
   async getCategoryById(id: string): Promise<Category> {
     const find = this.categoryRepository.findOne({ where: { id } });
@@ -56,12 +57,14 @@ export class CategoryService {
     return find;
   }
 
-  // <===================DELETE CATEGORY======================>
+  // <=================== DELETE CATEGORY ======================>
 
   async deleteCategory(id: string): Promise<void> {
     const result = await this.categoryRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }
-  }
+  } 
+
+ 
 }
