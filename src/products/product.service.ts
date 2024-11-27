@@ -22,6 +22,7 @@ export class ProductService {
 
     const categories = await this.categoryRepository.find({
       where: { id: In(categoryIds || []) },
+      relations: ['subcategories'],
     });
 
     const product = this.productRepository.create({
