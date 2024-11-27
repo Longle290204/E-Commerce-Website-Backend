@@ -22,7 +22,9 @@ export class Category {
   })
   products: Product[];
 
-  @ManyToOne((_type) => Category, (category) => category.subcategories)
+  @ManyToOne((_type) => Category, (category) => category.subcategories, {
+    onDelete: 'CASCADE',
+  })
   parent: Category;
 
   @OneToMany((_type) => Category, (category) => category.parent)

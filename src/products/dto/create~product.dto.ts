@@ -1,6 +1,5 @@
 import {
   IsNotEmpty,
-  IsNumber,
   IsString,
   IsArray,
   IsUUID,
@@ -8,7 +7,7 @@ import {
 
 export class CreateProductDto {
   @IsNotEmpty()
-  @IsString()
+  @IsString() 
   name: string;
 
   @IsNotEmpty()
@@ -16,6 +15,6 @@ export class CreateProductDto {
   price: string;
 
   @IsArray()
-  // @IsUUID('4', { each: true })
+  @IsUUID('4', { each: true })
   categoryIds: string[]; // Đây là mảng id của các danh mục
 }

@@ -22,10 +22,9 @@ export class Product {
   })
   @JoinTable()
   categories: Category[];
-
-  // @OneToMany((_type) => ProductsSize, (productSize) => productSize.product)
-  // sizes: ProductsSize;
 }
+// @OneToMany((_type) => ProductsSize, (productSize) => productSize.product)
+// sizes: ProductsSize;
 // @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
 // date_added: Date;
 
