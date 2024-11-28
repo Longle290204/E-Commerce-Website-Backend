@@ -44,34 +44,22 @@ export class CategoryService {
 
   // <=================== GET ALL CATEGORIES ======================>
 
-  parentCategory = (
-    parentId: string | null,
-    categories: Category[],
-  ): Category[] => {
-    return categories.filter((category) =>
-      category.parent ? category.parent.id === parentId : parentId === null,
-    );
-  };
-
-  buildNestedTree = (
-    parentId: string | null,
-    categories: Category[],
-  ): NestedCategory[] => {
-    const childrenCategory = this.parentCategory(parentId, categories);
-
-    return childrenCategory.map((category) => ({
-      id: category.id,
-      name: category.name,
-      subcategories: this.buildNestedTree(category.id, categories),
-    }));
-  };
-
   async getNestedCategories(): Promise<NestedCategory[]> {
     const categories = await this.categoryRepository.find({
       relations: ['parent', 'subcategories'],
     });
-
-    return this.buildNestedTree(null, categories);
+    const buildNestedTree = (parentId: string | null): NestedCategory[] => {
+      return categories
+        .filter((category) =>
+          category.parent ? category.parent.id === parentId : parentId === null,
+        )
+        .map((category) => ({
+          id: category.id,
+          name: category.name,
+          subcategories: buildNestedTree(category.id),
+        }));
+    };
+    return buildNestedTree(null);
   }
 
   // <=================== GET CATEGORIES BY ID ======================>
