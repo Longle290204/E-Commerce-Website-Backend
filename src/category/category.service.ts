@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Category } from './entities/category~entity';
+import { NestedCategory } from './types/category.types';
 
 @Injectable()
 export class CategoryService {
@@ -43,8 +44,34 @@ export class CategoryService {
 
   // <=================== GET ALL CATEGORIES ======================>
 
-  async getAllCategories(): Promise<Category[]> {
-    return await this.categoryRepository.find({ relations: ['subcategories'] });
+  parentCategory = (
+    parentId: string | null,
+    categories: Category[],
+  ): Category[] => {
+    return categories.filter((category) =>
+      category.parent ? category.parent.id === parentId : parentId === null,
+    );
+  };
+
+  buildNestedTree = (
+    parentId: string | null,
+    categories: Category[],
+  ): NestedCategory[] => {
+    const childrenCategory = this.parentCategory(parentId, categories);
+
+    return childrenCategory.map((category) => ({
+      id: category.id,
+      name: category.name,
+      subcategories: this.buildNestedTree(category.id, categories),
+    }));
+  };
+
+  async getNestedCategories(): Promise<NestedCategory[]> {
+    const categories = await this.categoryRepository.find({
+      relations: ['parent', 'subcategories'],
+    });
+
+    return this.buildNestedTree(null, categories);
   }
 
   // <=================== GET CATEGORIES BY ID ======================>
@@ -64,7 +91,5 @@ export class CategoryService {
     if (result.affected === 0) {
       throw new NotFoundException(`Category with ID ${id} not found`);
     }
-  } 
-
- 
+  }
 }
