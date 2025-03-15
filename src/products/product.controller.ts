@@ -10,11 +10,13 @@ import { Product } from './Entities/product~entity';
 import { GetFilterDto } from './dto/get~product.dto';
 import { UpdateProduct } from './dto/update~product.dto';
 
+
 @Controller('products')
 export class ProductController {
    constructor(private productService: ProductService) {}
 
    @Post()
+  
    @UseInterceptors(
       FileInterceptor('image', {
          storage: diskStorage({

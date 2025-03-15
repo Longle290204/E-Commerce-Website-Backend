@@ -115,7 +115,7 @@ export class ProductService {
       // query.leftJoinAndSelect('product.categories', 'category');
 
       if (search) {
-         query.andWhere('(LOWER(product.name) LIKE LOWER(:search) OR LOWER(product.price) LIKE LOWER(:search))', {
+         query.andWhere('(LOWER(product.name) LIKE LOWER(:search) OR CAST(product.price AS TEXT) LIKE :search)', {
             search: `%${search}%`,
          });
       }
@@ -147,7 +147,7 @@ export class ProductService {
    //   return await this.productRepository.find({ where: { category: category } });
    // }
 
-   async updateProduct(id: string, name: string, price: string, imageURL?: string): Promise<Product> {
+   async updateProduct(id: string, name: string, price: number, imageURL?: string): Promise<Product> {
       const product = await this.getProductById(id);
       product.name = name;
       product.price = price;

@@ -16,8 +16,11 @@ export class Product {
    @Column({ type: 'varchar', length: 255 })
    name: string;
 
-   @Column()
-   price: string;
+   @Column({ type: 'decimal', default: 0 })
+   price: number;
+
+   @Column({ type: 'decimal', default: 0 })
+   discount: number;
 
    @ManyToMany((_type) => Category, (category) => category.products, {
       cascade: true,
@@ -32,7 +35,7 @@ export class Product {
    @OneToMany(() => FavoriteProduct, (favoriteProduct) => favoriteProduct.product)
    favoriteProducts: FavoriteProduct[];
 
-   @ManyToOne(() => User, (user) => user.products)
+   @ManyToMany(() => User, (user) => user.favoriteProducts)
    user: User;
 
    @OneToMany(() => ProductImages, (productImages) => productImages.product, { cascade: true, eager: true })
