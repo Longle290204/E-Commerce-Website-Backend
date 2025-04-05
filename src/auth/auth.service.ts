@@ -30,6 +30,12 @@ export class AuthService {
          const payload: JwtPayload = { username: username, id: user.id };
          const accessToken: string = this.jwtService.sign(payload, { expiresIn: '15m' });
          const refreshToken: string = this.jwtService.sign(payload, { expiresIn: '5d' });
+
+         // Hash refreshToken trước khi lưu vào DB
+         const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+         // Lưu refreshToken vào database
+         await this.userRepository.update(user.id, { refreshToken: hashedRefreshToken });
+
          return { accessToken, refreshToken };
       } else {
          throw new UnauthorizedException('Please check your login credentials');
