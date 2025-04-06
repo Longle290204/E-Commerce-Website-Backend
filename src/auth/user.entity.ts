@@ -1,8 +1,8 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 import { Task } from '../tasks/task~entity';
 import { FavoriteProduct } from 'src/favorite_product/entities/favorite_product.entity';
-import { Product } from 'src/products/Entities/product~entity';
 import { Cart } from 'src/shopping-cart/Cart/entities/cart.entity';
+import { Role } from 'src/roles/entity/role.entity';
 
 @Entity()
 export class User {
@@ -12,7 +12,7 @@ export class User {
    @Column({ unique: true })
    username: string;
 
-   @Column({ unique: true })
+   @Column({ unique: true, default: null })
    phoneNumber: string;
 
    @Column()
@@ -20,6 +20,10 @@ export class User {
 
    @Column({ nullable: true })
    refreshToken: string; // Lưu Refresh Token mã hoá
+
+   @ManyToOne(() => Role, (role) => role.users, { eager: true }) // Quan hệ với Role
+   @JoinColumn({ name: 'role_id' }) // Tạo khóa ngoại
+   role: Role;
 
    @OneToMany(() => FavoriteProduct, (favoriteProduct) => favoriteProduct.user)
    favoriteProducts: FavoriteProduct[];
