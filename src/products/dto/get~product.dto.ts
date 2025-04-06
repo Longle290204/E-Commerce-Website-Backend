@@ -1,4 +1,5 @@
-import { IsArray, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class GetFilterDto {
    @IsOptional()
@@ -10,7 +11,15 @@ export class GetFilterDto {
    @IsString({ each: true })
    category: string[];
 
-   // @IsOptional()
-   // @IsNumber()
-   // size: number;
+   @IsOptional()
+   @Type(() => Number)
+   @IsNumber()
+   @Min(1)
+   page?: number = 1;
+
+   @IsOptional()
+   @Type(() => Number)
+   @IsNumber()
+   @Min(1)
+   limit?: number = 12;
 }

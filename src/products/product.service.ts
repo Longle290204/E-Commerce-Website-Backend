@@ -156,6 +156,29 @@ export class ProductService {
       }
    }
 
+   // Get Product Acording Page
+   async getProductAcordingPage(getFilterDto: GetFilterDto) {
+      const { page, limit } = getFilterDto;
+
+      // Skip products step
+      const skip = (page - 1) * limit;
+
+      const queryBuilder = this.productRepository.createQueryBuilder('product');
+
+      const [products, total] = await queryBuilder
+         .orderBy('product.createdAt', 'DESC')
+         .skip(skip)
+         .take(limit)
+         .getManyAndCount(); // Thay vì findAndCount()
+
+      return {
+         data: products,
+         currentPage: page,
+         totalPages: Math.ceil(total / limit),
+         totalItems: total,
+         hasMore: total > page * limit,
+      };
+   }
 
    async updateProduct(id: string, name: string, price: number, imageURL?: string): Promise<Product> {
       const product = await this.getProductById(id);

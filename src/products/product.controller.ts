@@ -1,6 +1,17 @@
-import { Controller, Post, UploadedFile, UseInterceptors, Body, Get, Param, Delete, Query, Put } from '@nestjs/common';
+import {
+   Controller,
+   Post,
+   UploadedFile,
+   UseInterceptors,
+   Body,
+   Get,
+   Param,
+   Delete,
+   Query,
+   Put,
+   UseGuards,
+} from '@nestjs/common';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateProductDto } from './dto/create~product.dto';
 import { ProductService } from './product.service';
@@ -51,25 +62,11 @@ export class ProductController {
       return this.productService.addThumbnails(productId, images);
    }
 
-   // @Get()
-   // async getProduct(
-   //   @Query('type') type: string,
-   //   @Query('category') category: ProductCategory,
-   // ): Promise<Product[]> {
-   //   // if (type === 'new') {
-   //   //   return this.productService.getNewProduct();
-   //   // } else if (category) {
-   //   //   return this.productService.getCategoryProduct(category);
-   //   // } else if (type === 'best-seller') {
-   //   //   return this.productService.getBestSeller();
-   //   // // }
-   //   // if (category) {
-   //   //   return this.productService.getCategoryProduct(category);
-   //   // }
-   //   return await this.productService.getProducts();
-   // }
-
-   // @Get('category/:id')
+   // Get Product Acording Page(pagination)
+   @Get('/collection')
+   getProductAcordingPage(@Query() getFilterDto: GetFilterDto) {
+      return this.productService.getProductAcordingPage(getFilterDto);
+   }
 
    @Get('category/:id')
    getProductsByCategory(@Param('id') categoryId: string): Promise<Product[]> {
