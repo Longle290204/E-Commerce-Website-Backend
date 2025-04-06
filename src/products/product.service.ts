@@ -7,6 +7,8 @@ import { GetFilterDto } from './dto/get~product.dto';
 import { In } from 'typeorm';
 import { Category } from 'src/category/entities/category~entity';
 import { ProductImages } from './Entities/productImages.entity';
+import { HttpException, HttpStatus } from '@nestjs/common';
+
 
 @Injectable()
 export class ProductService {
@@ -16,7 +18,8 @@ export class ProductService {
    constructor(private dataSource: DataSource) {}
 
    async createProduct(createProductDto: CreateProductDto, image: Express.Multer.File): Promise<Product> {
-      const { name, price, categoryId } = createProductDto;
+      const { name, price, categoryId, status, mainCategoryId } = createProductDto;
+
       const mainImage = `http://localhost:3002/uploads/${image.filename}`;
 
       const categories = await this.categoryRepository.find({
@@ -24,11 +27,36 @@ export class ProductService {
          relations: ['subcategories'],
       });
 
+      console.log('categories', categories);
+
+      // Kiểm tra xem danh mục chính có hợp lệ không
+      let mainCategory: Category | null = null;
+      if (mainCategoryId) {
+         mainCategory = await this.categoryRepository.findOne({ where: { id: mainCategoryId } });
+
+         if (!mainCategory) {
+            throw new HttpException('Main category not found', HttpStatus.BAD_REQUEST);
+         }
+
+         const categoriesArray = await this.categoryRepository.find({
+            relations: ['subcategories'],
+         });
+
+         // Đảm bảo mainCategory nằm trong danh sách categories
+         if (!categoriesArray.some((category) => category.id === mainCategoryId)) {
+            console.log('categories', categories);
+
+            throw new HttpException('Main category must be in categories', HttpStatus.BAD_REQUEST);
+         }
+      }
+
       const product = this.productRepository.create({
          name,
          price,
          mainImage,
          categories,
+         status,
+         mainCategory,
       });
       console.log(product);
 
@@ -128,24 +156,6 @@ export class ProductService {
       }
    }
 
-   // async getNewProduct(): Promise<Product[]> {
-   //   const tenDayAgo = new Date();
-   //   tenDayAgo.setDate(tenDayAgo.getDate() - 10);
-
-   //   return await this.productRepository.find({
-   //     where: { date_added: MoreThanOrEqual(tenDayAgo) },
-   //   });
-   // }
-
-   // async getBestSeller(): Promise<Product[]> {
-   //   return await this.productRepository.find({
-   //     where: { best_seller: true },
-   //   });
-   // }
-
-   // async getCategoryProduct(category: ProductCategory): Promise<Product[]> {
-   //   return await this.productRepository.find({ where: { category: category } });
-   // }
 
    async updateProduct(id: string, name: string, price: number, imageURL?: string): Promise<Product> {
       const product = await this.getProductById(id);
