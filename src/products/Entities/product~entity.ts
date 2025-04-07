@@ -1,4 +1,3 @@
-
 import {
    Column,
    Entity,
@@ -14,8 +13,8 @@ import { Cart } from 'src/shopping-cart/Cart/entities/cart.entity';
 import { FavoriteProduct } from 'src/favorite_product/entities/favorite_product.entity';
 import { User } from 'src/auth/user.entity';
 import { ProductImages } from './productImages.entity';
-import { ProductSize } from 'src/product-size/entity/product-size.entity';
 import * as removeAccents from 'remove-accents';
+import { ProductSize } from 'src/product-size/entity/product-size.entity';
 
 export enum ProductStatus {
    ACTIVE = 'ACTIVE',
@@ -53,6 +52,7 @@ export class Product {
    @OneToMany((_type) => Cart, (cart) => cart.product)
    cart: Cart[];
 
+
    @OneToMany(() => FavoriteProduct, (favoriteProduct) => favoriteProduct.product)
    favoriteProducts: FavoriteProduct[];
 
@@ -61,6 +61,15 @@ export class Product {
 
    @OneToMany(() => ProductImages, (productImages) => productImages.product, { cascade: true, eager: true })
    images: ProductImages[];
+
+   @Column({ unique: true })
+   slug: string;
+
+   @BeforeInsert()
+   generateSlug() {
+      // this.slug = this.name.toLowerCase().replace(/ /g, '-');
+      this.slug = removeAccents(this.name).toLowerCase().replace(/ /g, '-');
+   }
 
    @Column({
       type: 'enum',
