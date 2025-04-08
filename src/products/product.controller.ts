@@ -21,13 +21,11 @@ import { Product } from './Entities/product~entity';
 import { GetFilterDto } from './dto/get~product.dto';
 import { UpdateProduct } from './dto/update~product.dto';
 
-
 @Controller('products')
 export class ProductController {
    constructor(private productService: ProductService) {}
 
    @Post()
-  
    @UseInterceptors(
       FileInterceptor('image', {
          storage: diskStorage({
@@ -71,6 +69,11 @@ export class ProductController {
    @Get('category/:id')
    getProductsByCategory(@Param('id') categoryId: string): Promise<Product[]> {
       return this.productService.getProductsByCategory(categoryId);
+   }
+
+   @Get('all')
+   getAllProducts(): Promise<Product[]> {
+      return this.productService.getProducts();
    }
 
    @Get()

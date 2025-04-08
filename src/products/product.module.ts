@@ -10,39 +10,36 @@ import { CategoryModule } from 'src/category/category.module';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { FavoriteProduct } from 'src/favorite_product/entities/favorite_product.entity';
 import { ProductImages } from './Entities/productImages.entity';
+import { ProductSize } from 'src/product-size/entity/product-size.entity';
+import { ProductSizeService } from 'src/product-size/product-size.service';
+import { ProductSizeModule } from 'src/product-size/product-size.module';
 
 @Module({
-    imports: [
-        TypeOrmModule.forFeature([Product, FavoriteProduct, ProductImages]),
-        CategoryModule,
-        // Cấu hình xử lý upload files
-        MulterModule.register({
-            storage: diskStorage({
-                destination: './uploads',
-                filename: (req, file, callback) => {
-                    const uniqueSuffix =
-                        Date.now() + '-' + Math.round(Math.random() * 1e9);
-                    const ext = extname(file.originalname);
-                    const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
-                    callback(null, filename);
-                },
-            }),
-            fileFilter: (req, file, callback) => {
-                if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
-                    return callback(
-                        new HttpException(
-                            'Chỉ cho phép tải lên file hình ảnh!',
-                            HttpStatus.BAD_REQUEST,
-                        ),
-                        false,
-                    );
-                }
-                callback(null, true);
+   imports: [
+      TypeOrmModule.forFeature([Product, FavoriteProduct, ProductImages, ProductSize]),
+      CategoryModule, ProductSizeModule,
+      // Cấu hình xử lý upload files
+      MulterModule.register({
+         storage: diskStorage({
+            destination: './uploads',
+            filename: (req, file, callback) => {
+               const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+               const ext = extname(file.originalname);
+               const filename = `${file.fieldname}-${uniqueSuffix}${ext}`;
+               callback(null, filename);
             },
-        }),
-        //
-    ],
-    controllers: [ProductController],
-    providers: [ProductService],
+         }),
+         fileFilter: (req, file, callback) => {
+            if (!file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+               return callback(new HttpException('Chỉ cho phép tải lên file hình ảnh!', HttpStatus.BAD_REQUEST), false);
+            }
+            callback(null, true);
+         },
+      }),
+      //
+   ],
+   controllers: [ProductController],
+   providers: [ProductService],
+   exports: [ProductService], // Export the service if you need to use it in other modules
 })
 export class ProductModule {}

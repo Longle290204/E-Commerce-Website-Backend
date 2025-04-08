@@ -52,6 +52,8 @@ export class Product {
    @OneToMany((_type) => Cart, (cart) => cart.product)
    cart: Cart[];
 
+   @OneToMany(() => ProductSize, (productSize) => productSize.product)
+   productSizes: ProductSize[];
 
    @OneToMany(() => FavoriteProduct, (favoriteProduct) => favoriteProduct.product)
    favoriteProducts: FavoriteProduct[];

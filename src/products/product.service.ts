@@ -8,17 +8,21 @@ import { In } from 'typeorm';
 import { Category } from 'src/category/entities/category~entity';
 import { ProductImages } from './Entities/productImages.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
-
+import { ProductSizeService } from 'src/product-size/product-size.service';
 
 @Injectable()
 export class ProductService {
    private productRepository = this.dataSource.getRepository(Product);
    private categoryRepository = this.dataSource.getRepository(Category);
    private productImagesRepsository = this.dataSource.getRepository(ProductImages);
-   constructor(private dataSource: DataSource) {}
+
+   constructor(
+      private dataSource: DataSource,
+      private readonly productSizeService: ProductSizeService,
+   ) {}
 
    async createProduct(createProductDto: CreateProductDto, image: Express.Multer.File): Promise<Product> {
-      const { name, price, categoryId, status, mainCategoryId } = createProductDto;
+      const { name, price, categoryId, status, mainCategoryId, sizeIds } = createProductDto;
 
       const mainImage = `http://localhost:3002/uploads/${image.filename}`;
 
@@ -58,9 +62,13 @@ export class ProductService {
          status,
          mainCategory,
       });
-      console.log(product);
 
-      return await this.productRepository.save(product);
+      const savedProduct = await this.productRepository.save(product);
+      console.log('sizeIds', typeof sizeIds, sizeIds);
+
+      await this.productSizeService.assignSizesToProduct(savedProduct.id, sizeIds);
+
+      return savedProduct;
    }
 
    async addThumbnails(productId: string, images: string[]) {
@@ -115,7 +123,7 @@ export class ProductService {
 
    // Get Products By Id
    async getProductById(id: string): Promise<Product> {
-      const found = await this.productRepository.findOne({ where: { id } });
+      const found = await this.productRepository.findOne({ where: { id }, relations: ['productSizes'] });
 
       if (!found) {
          throw new NotFoundException(`Product with ID ${id} not found`);
@@ -126,7 +134,7 @@ export class ProductService {
 
    // Find All Products
    getProducts(): Promise<Product[]> {
-      return this.productRepository.find();
+      return this.productRepository.find({ relations: ['categories', 'productSizes'] });
    }
 
    async deleteProduct(id: string): Promise<void> {
