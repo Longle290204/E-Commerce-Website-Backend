@@ -1,79 +1,71 @@
 import { Module } from '@nestjs/common';
-import { TasksController } from './tasks/tasks.controller';
-import { TasksService } from './tasks/tasks.service';
 import { TasksModule } from './tasks/tasks.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configValidateSchema } from './tasks/config.schema'; // Joi schema
-import { CategoryController } from './category/category.controller';
 import { CategoryModule } from './category/category.module';
-import { CategoryService } from './category/category.service';
-import { ProductController } from './products/product.controller';
 import { ProductModule } from './products/product.module';
-import { ProductService } from './products/product.service';
-import { SlideBannerController } from './slide-banner/slide-banner.controller';
 import { SlideBannerModule } from './slide-banner/slide-banner.module';
-import { SlideBannerService } from './slide-banner/slide-banner.service';
+import { CartModule } from './shopping-cart/Cart/cart.module';
+import { ProductSizeModule } from './product-size/product-size.module';
+import { SuperAdminModule } from './auth/super-admin/super-admin.module';
+import { SizeModule } from './size/size.module';
+import { FavoriteProductModule } from './favorite_product/favorite_product.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      envFilePath: [`.env.stage.${process.env.STAGE}`],
-      // ConfigModule: Để cấu hình cũng như tải các biến môi trường
-      // forRoot(): module sẽ tự động đọc các biến môi trường từ file .env và làm chúng có sẵn trong toàn bộ ứng dụng
-      //envFilePath: Xác định đường dẫn tới tệp .env mà ConfigModule sẽ tải các biến môi trường từ đó.
-      // isGlobal: true,
-      // validationSchema: configValidateSchema,
-    }),
-    CategoryModule,
-    ProductModule,
-    TasksModule,
-    SlideBannerModule,
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => {
-        const config = {
-          DB_HOST: configService.get('DB_HOST'),
-          DB_PORT: configService.get('DB_PORT'),
-          DB_USERNAME: configService.get('DB_USERNAME'),
-          DB_PASSWORD: configService.get('DB_PASSWORD'),
-          DB_DATABASE: configService.get('DB_DATABASE'),
-          JWT_SECRET: configService.get('JWT_SECRET'),
-        };
+   imports: [
+      ProductSizeModule,
+      ConfigModule.forRoot({
+         envFilePath: [`.env.stage.${process.env.STAGE}`],
+         // ConfigModule: Để cấu hình cũng như tải các biến môi trường
+         // forRoot(): module sẽ tự động đọc các biến môi trường từ file .env và làm chúng có sẵn trong toàn bộ ứng dụng
+         //envFilePath: Xác định đường dẫn tới tệp .env mà ConfigModule sẽ tải các biến môi trường từ đó.
+         // isGlobal: true,
+         // validationSchema: configValidateSchema,
+      }),
+      CategoryModule,
+      ProductModule,
+      TasksModule,
+      SlideBannerModule,
+      CartModule,
+      FavoriteProductModule,
+      SizeModule,
+      SuperAdminModule,
+      AuthModule,
+      TypeOrmModule.forRootAsync({
+         imports: [ConfigModule],
+         inject: [ConfigService],
+         useFactory: async (configService: ConfigService) => {
+            const config = {
+               DB_HOST: configService.get('DB_HOST'),
+               DB_PORT: configService.get('DB_PORT'),
+               DB_USERNAME: configService.get('DB_USERNAME'),
+               DB_PASSWORD: configService.get('DB_PASSWORD'),
+               DB_DATABASE: configService.get('DB_DATABASE'),
+               JWT_SECRET: configService.get('JWT_SECRET'),
+            };
 
-        const { error, value } = configValidateSchema.validate(config);
+            const { error, value } = configValidateSchema.validate(config);
 
-        if (error) {
-          throw new Error(`Config validation error: ${error.message}`);
-        }
+            if (error) {
+               throw new Error(`Config validation error: ${error.message}`);
+            }
 
-        return {
-          type: 'postgres',
-          autoLoadEntities: true,
-          synchronize: true,
-          host: value.DB_HOST,
-          port: value.DB_PORT,
-          username: value.DB_USERNAME,
-          password: value.DB_PASSWORD,
-          database: value.DB_DATABASE,
-        };
-      },
-    }),
-    AuthModule,
-  ],
-  providers: [
-    TasksService,
-    CategoryService,
-    ProductService,
-    SlideBannerService,
-  ],
-  controllers: [
-    TasksController,
-    CategoryController,
-    ProductController,
-    SlideBannerController,
-  ],
+            return {
+               type: 'postgres',
+               autoLoadEntities: true,
+               synchronize: true,
+               host: value.DB_HOST,
+               port: value.DB_PORT,
+               username: value.DB_USERNAME,
+               password: value.DB_PASSWORD,
+               database: value.DB_DATABASE,
+            };
+         },
+      }),
+   ],
+   providers: [],
+   controllers: [],
 })
 export class AppModule {}
