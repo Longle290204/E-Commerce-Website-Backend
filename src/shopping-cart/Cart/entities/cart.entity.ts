@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Product } from 'src/products/Entities/product~entity';
 import { User } from 'src/auth/user.entity';
 
@@ -12,6 +12,9 @@ export class Cart {
 
    @Column({ type: 'decimal', default: 0 })
    totalPrice: number; // ✅ Tổng giá của sản phẩm trong giỏ
+
+   @Column()
+   size: number;
 
    @ManyToOne(() => Product, (product) => product.cart, {
       eager: true,

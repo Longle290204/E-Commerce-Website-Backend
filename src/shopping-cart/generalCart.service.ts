@@ -5,22 +5,26 @@ import { Product } from 'src/products/Entities/product~entity';
 import { FormCartDto } from './dto/FormCart.dto';
 import { NotFoundException } from '@nestjs/common';
 import { User } from 'src/auth/user.entity';
+import { Size } from 'src/size/Entity/size.entity';
 
 @Injectable()
 export class GeneralCartService {
    private generalRepository;
    private productRepository;
+   private sizeRepository;
    private userRepository;
    constructor(private dataSource: DataSource) {
       this.generalRepository = this.dataSource.getRepository(Cart);
       this.productRepository = this.dataSource.getRepository(Product);
       this.userRepository = this.dataSource.getRepository(User);
+      this.sizeRepository = this.dataSource.getRepository(Size);
    }
 
    // <--------- Add To Cart --------->
    async addToCart(userId: string, formCartDto: FormCartDto): Promise<Cart> {
-      const { productId, quantity } = formCartDto;
+      const { productId, quantity, sizeId } = formCartDto;
 
+      // Take product
       const product = await this.productRepository.findOne({
          where: { id: productId },
       });
@@ -29,8 +33,18 @@ export class GeneralCartService {
          throw new NotFoundException('Product not found or does not belong to the user');
       }
 
+      // Take size
+      const size = await this.sizeRepository.findOne({ where: { id: sizeId } });
+      console.log('size-cart', size.size);
+
+      if (!size) {
+         throw new NotFoundException('Size not found or does not belong to the user');
+      }
+
+      // Kiểm tra xem sản phẩm có cùng size đã tồn tại trong giỏ hàng chưa
+      // Nếu có thì tăng quantity lên, nếu không thì tạo mới
       let cart = await this.generalRepository.findOne({
-         where: { user: { id: userId }, product: { id: productId } },
+         where: { user: { id: userId }, product: { id: productId }, size: size.size },
          relations: ['user', 'product'], // Thêm quan hệ để tránh lỗi undefined
       });
 
@@ -42,6 +56,7 @@ export class GeneralCartService {
          cart = this.generalRepository.create({
             product,
             quantity,
+            size: size.size,
             user: { id: userId },
          });
       }

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
-import { UUID } from 'crypto';
+
 export class FormCartDto {
    @IsNotEmpty()
    @IsUUID()
@@ -10,6 +10,11 @@ export class FormCartDto {
    @IsNumber()
    @Type(() => Number)
    quantity: number;
+
+   @IsNotEmpty()
+   @IsNumber()
+   @Type(() => Number)
+   sizeId: number; // Số lượng sản phẩm trong giỏ hàng
 
    // @IsNotEmpty()
    // @IsNumber()
