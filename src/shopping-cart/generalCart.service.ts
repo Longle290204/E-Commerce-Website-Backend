@@ -115,8 +115,6 @@ export class GeneralCartService {
    async plusQuantity(userId: string, updateCartDto: UpdateCartDto): Promise<void> {
       const { productId, size } = updateCartDto;
 
-      console.log('size', size);
-
       const product = await this.productRepository.findOne({
          where: { id: productId },
       });
@@ -171,10 +169,7 @@ export class GeneralCartService {
    // <--------- Input Quantity --------->
    async inputQuantity(userId: string, updateCartDto: UpdateCartDto): Promise<void> {
       const { quantity, productId, size } = updateCartDto;
-
-      console.log('size', size);
       
-
       await this.generalRepository
          .createQueryBuilder()
          .update(Cart)
