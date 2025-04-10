@@ -6,6 +6,7 @@ import { UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
+import { UpdateCartDto } from './dto/update-cart.dto';
 
 @Controller('cart')
 export class CartController {
@@ -46,26 +47,26 @@ export class CartController {
    // }
 
    @UseGuards(AuthGuard('jwt')) // Đảm bảo route này có bảo vệ bởi JWT
-   @Post('/increase-quantity/:productId')
-   plusQuantity(@GetUser() user: User, @Param('productId') productId: string): Promise<void> {
+   @Post('/increase-quantity')
+   plusQuantity(@GetUser() user: User, @Body() updateCartDto: UpdateCartDto): Promise<void> {
       const userId = user.id;
-      return this.generalCartService.plusQuantity(userId, productId);
+      return this.generalCartService.plusQuantity(userId, updateCartDto);
    }
 
    @UseGuards(AuthGuard('jwt')) // Đảm bảo route này có bảo vệ bởi JWT
    @Post('/decrease-quantity')
-   async minusQuantity(@GetUser() user: User, @Body('productId') productId: string): Promise<void> {
+   async minusQuantity(@GetUser() user: User, @Body() updateCartDto: UpdateCartDto): Promise<void> {
       const userId = user.id;
-      await this.generalCartService.minusQuantity(userId, productId);
-      await this.generalCartService.removeIfZero(userId, productId);
+      await this.generalCartService.minusQuantity(userId, updateCartDto);
+      await this.generalCartService.removeIfZero(userId, updateCartDto);
    }
 
    // <--------- Input Quantity -------->
    @UseGuards(AuthGuard('jwt'))
    @Post('/input-quantity')
-   inputQuantity(@GetUser() user: User, @Body() formCartDto: FormCartDto): Promise<void> {
+   inputQuantity(@GetUser() user: User, @Body() updateCartDto: UpdateCartDto): Promise<void> {
       const userId = user.id;
-      return this.generalCartService.inputQuantity(userId, formCartDto);
+      return this.generalCartService.inputQuantity(userId, updateCartDto);
    }
 
    @UseGuards(AuthGuard('jwt')) // Đảm bảo route này có bảo vệ bởi JWT
@@ -76,10 +77,11 @@ export class CartController {
    }
 
    @Post('/remove-if-zero')
-   async removeIfZero(@GetUser() user: User, @Body('productId') productId: string): Promise<void> {
+   async removeIfZero(@GetUser() user: User, @Body() updateCartDto: UpdateCartDto): Promise<void> {
       const userId = user.id;
-      return this.generalCartService.removeIfZero(userId, productId);
+      return this.generalCartService.removeIfZero(userId, updateCartDto);
    }
+   
    @UseGuards(AuthGuard('jwt')) // Đảm bảo route này có bảo vệ bởi JWT
    @Get('/get-all-quantity')
    async getAllQuantity(@GetUser() user: User): Promise<{ productId: string; quantity: number }[]> {

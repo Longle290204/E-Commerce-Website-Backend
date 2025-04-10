@@ -7,7 +7,7 @@ export class Cart {
    @PrimaryGeneratedColumn('uuid')
    id: string;
 
-   @Column()
+   @Column({ default: 1 })
    quantity: number;
 
    @Column({ type: 'decimal', default: 0 })

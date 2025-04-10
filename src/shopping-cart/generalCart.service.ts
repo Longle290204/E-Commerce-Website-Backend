@@ -6,6 +6,7 @@ import { FormCartDto } from './dto/FormCart.dto';
 import { NotFoundException } from '@nestjs/common';
 import { User } from 'src/auth/user.entity';
 import { Size } from 'src/size/Entity/size.entity';
+import { UpdateCartDto } from './Cart/dto/update-cart.dto';
 
 @Injectable()
 export class GeneralCartService {
@@ -44,7 +45,7 @@ export class GeneralCartService {
       // Kiểm tra xem sản phẩm có cùng size đã tồn tại trong giỏ hàng chưa
       // Nếu có thì tăng quantity lên, nếu không thì tạo mới
       let cart = await this.generalRepository.findOne({
-         where: { user: { id: userId }, product: { id: productId }, size: size.size },
+         where: { user: { id: userId }, product: { id: productId }, size: size.id },
          relations: ['user', 'product'], // Thêm quan hệ để tránh lỗi undefined
       });
 
@@ -111,7 +112,11 @@ export class GeneralCartService {
    // }
 
    // <--------- Increment Quantity --------->
-   async plusQuantity(userId: string, productId: string): Promise<void> {
+   async plusQuantity(userId: string, updateCartDto: UpdateCartDto): Promise<void> {
+      const { productId, size } = updateCartDto;
+
+      console.log('size', size);
+
       const product = await this.productRepository.findOne({
          where: { id: productId },
       });
@@ -121,12 +126,15 @@ export class GeneralCartService {
          .update(Cart)
          .set({ quantity: () => 'quantity + 1', totalPrice: () => `(quantity + 1) * ${Number(product.price)}` })
          .where('productId = :productId', { productId })
+         .andWhere('size = :size', { size }) // Đúng cú pháp
          .andWhere('userId = :userId', { userId })
          .execute();
    }
 
    // <--------- Decrement Quantity --------->
-   async minusQuantity(userId: string, productId: string): Promise<void> {
+   async minusQuantity(userId: string, updateCartDto: UpdateCartDto): Promise<void> {
+      const { productId, size } = updateCartDto;
+
       const product = await this.productRepository.findOne({
          where: { id: productId },
       });
@@ -140,11 +148,15 @@ export class GeneralCartService {
          })
          .where('userId = :userId', { userId })
          .andWhere('productId = :productId', { productId })
+         .andWhere('size = :size', { size })
+         .andWhere('userId = :userId', { userId })
          .execute();
    }
 
    // <--------- Remove Cart Item If Quantity Is Zero --------->
-   async removeIfZero(userId: string, productId: string): Promise<void> {
+   async removeIfZero(userId: string, updateCartDto: UpdateCartDto): Promise<void> {
+      const { productId, size } = updateCartDto;
+
       return this.generalRepository
          .createQueryBuilder()
          .delete()
@@ -152,18 +164,24 @@ export class GeneralCartService {
          .where('quantity = 0')
          .andWhere('userId = :userId', { userId })
          .andWhere('productId = :productId', { productId })
+         .andWhere('size = :size', { size })
          .execute();
    }
 
    // <--------- Input Quantity --------->
-   async inputQuantity(userId: string, formCartDto: FormCartDto): Promise<void> {
-      const { quantity, productId } = formCartDto;
+   async inputQuantity(userId: string, updateCartDto: UpdateCartDto): Promise<void> {
+      const { quantity, productId, size } = updateCartDto;
+
+      console.log('size', size);
+      
+
       await this.generalRepository
          .createQueryBuilder()
          .update(Cart)
          .set({ quantity: quantity })
-         .where('userId = :userId', { userId })
-         .andWhere('productId = :productId', { productId })
+         .where('productId = :productId', { productId })
+         .andWhere('size = :size', { size })
+         .andWhere('userId = :userId', { userId })
          .execute();
    }
 

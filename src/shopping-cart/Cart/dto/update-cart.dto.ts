@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsUUID } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class FormCartDto {
-   @IsNotEmpty()
+export class UpdateCartDto {
+   @IsOptional()
    @IsUUID()
    productId: string;
 
@@ -11,13 +11,8 @@ export class FormCartDto {
    @Type(() => Number)
    quantity: number;
 
-   @IsNotEmpty()
+   @IsOptional()
    @IsNumber()
    @Type(() => Number)
-   sizeId: number; // Số lượng sản phẩm trong giỏ hàng
-
-   // @IsNotEmpty()
-   // @IsNumber()
-   // @Type(() => Number)
-   // totalPrice: number;
+   size: number;
 }
