@@ -1,5 +1,7 @@
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from 'src/products/Entities/product~entity';
+import { BeforeInsert } from 'typeorm';
+import * as removeAccents from 'remove-accents';
 
 export enum CategoryStatus {
     ACTIVE = 'ACTIVE',
@@ -25,8 +27,17 @@ export class Category {
     })
     parent: Category;
 
-    @OneToMany((_type) => Category, (category) => category.parent)
-    subcategories: Category[];
+   @OneToMany((_type) => Category, (category) => category.parent)
+   subcategories: Category[];
+
+   @Column({ unique: true })
+   slug: string;
+
+   @BeforeInsert()
+   generateSlug() {
+      // this.slug = this.name.toLowerCase().replace(/ /g, '-');
+      this.slug = removeAccents(this.name).toLowerCase().replace(/ /g, '-');
+   }
 
     @Column({
         type: 'enum',
