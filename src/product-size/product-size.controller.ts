@@ -1,6 +1,8 @@
-import { Controller, Body, Post, Get } from '@nestjs/common';
+import { Controller, Body, Post, Get, Patch, Query } from '@nestjs/common';
 import { ProductSizeService } from './product-size.service';
 import { CreateProductSizeDto } from './dto/createProductSize.dto';
+import { UpdateProductStockDto } from './dto/updateProductsize.dto';
+import { GetStockDto } from './dto/getStock.dto';
 
 @Controller('product-size')
 export class ProductSizeController {
@@ -14,5 +16,15 @@ export class ProductSizeController {
    @Get()
    getProductSizes() {
       return this.productSizeService.getProductSizes();
+   }
+
+   @Get('/getStock')
+   getStock(@Query() getStockDto: GetStockDto): Promise<number> {
+      return this.productSizeService.getStock(getStockDto);
+   }
+
+   @Patch('/updateStock')
+   updateStock(@Body() updateProductStockDto: UpdateProductStockDto) {
+      return this.productSizeService.updateStock(updateProductStockDto);
    }
 }

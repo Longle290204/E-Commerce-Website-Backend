@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Product } from 'src/products/Entities/product~entity';
 import { Size } from 'src/size/Entity/size.entity';
 
@@ -12,4 +12,7 @@ export class ProductSize {
 
    @ManyToOne(() => Size, (size) => size.productSizes, { eager: true })
    size: Size;
+
+   @Column({default: 0})
+   stock: number;
 }
