@@ -6,6 +6,8 @@ import { ProductSize } from './entity/product-size.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { CreateProductSizeDto } from './dto/createProductSize.dto';
 import { Product } from 'src/products/Entities/product~entity';
+import { UpdateProductStockDto } from './dto/updateProductsize.dto';
+import { GetStockDto } from './dto/getStock.dto';
 
 @Injectable()
 export class ProductSizeService {
@@ -59,5 +61,38 @@ export class ProductSizeService {
             size: size,
          });
       }
+   }
+
+   async updateStock(UpdateProductStockDto: UpdateProductStockDto) {
+      const { productId, sizeId, stock } = UpdateProductStockDto;
+
+      const productSize = await this.productSizeRepository.findOne({
+         where: { product: { id: productId }, size: { id: sizeId } },
+      });
+
+      if (!productSize) {
+         throw new HttpException('Product size not found', HttpStatus.NOT_FOUND);
+      }
+
+      productSize.stock += stock; // Update the stock value
+
+      await this.productSizeRepository.save(productSize);
+   }
+
+   async getStock(getStockDto: GetStockDto): Promise<number> {
+      const { productId, sizeId } = getStockDto;
+
+      console.log('productId', typeof productId);
+      console.log('sizeId', sizeId);
+
+      const productSize = await this.productSizeRepository.findOne({
+         where: { product: { id: productId }, size: { id: sizeId } },
+      });
+
+      if (!productSize) {
+         throw new HttpException('Product size not found', HttpStatus.NOT_FOUND);
+      }
+
+      return productSize.stock;
    }
 }
