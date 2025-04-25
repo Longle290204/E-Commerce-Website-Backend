@@ -63,7 +63,7 @@ export class GeneralCartService {
       // Kiểm tra xem sản phẩm có cùng size đã tồn tại trong giỏ hàng chưa
       // Nếu có thì tăng quantity lên, nếu không thì tạo mới
       let cart = await this.generalRepository.findOne({
-         where: { user: { id: userId }, product: { id: productId }, size: size.id },
+         where: { user: { id: userId }, product: { id: productId }, size: size.size },
          relations: ['user', 'product'], // Thêm quan hệ để tránh lỗi undefined
       });
 
