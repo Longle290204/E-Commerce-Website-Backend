@@ -7,6 +7,8 @@ import { NotFoundException } from '@nestjs/common';
 import { User } from 'src/auth/user.entity';
 import { Size } from 'src/size/Entity/size.entity';
 import { UpdateCartDto } from './Cart/dto/update-cart.dto';
+import { ProductSize } from 'src/product-size/entity/product-size.entity';
+import { HttpException, HttpStatus } from '@nestjs/common';
 
 @Injectable()
 export class GeneralCartService {
@@ -14,16 +16,32 @@ export class GeneralCartService {
    private productRepository;
    private sizeRepository;
    private userRepository;
+   private productSizeRepository;
    constructor(private dataSource: DataSource) {
       this.generalRepository = this.dataSource.getRepository(Cart);
       this.productRepository = this.dataSource.getRepository(Product);
       this.userRepository = this.dataSource.getRepository(User);
       this.sizeRepository = this.dataSource.getRepository(Size);
+      this.productSizeRepository = this.dataSource.getRepository(ProductSize);
    }
 
    // <--------- Add To Cart --------->
    async addToCart(userId: string, formCartDto: FormCartDto): Promise<Cart> {
       const { productId, quantity, sizeId } = formCartDto;
+
+      // Take product size
+      const productSize = await this.productSizeRepository.findOne({
+         where: { product: { id: productId }, size: { id: sizeId } },
+      });
+
+      if (!productSize) {
+         throw new NotFoundException('Product size not found or does not belong to the user');
+      }
+
+      // Check if product size is still available
+      if (productSize.stock < quantity) {
+         throw new HttpException('Out of stock', HttpStatus.BAD_REQUEST);
+      }
 
       // Take product
       const product = await this.productRepository.findOne({
