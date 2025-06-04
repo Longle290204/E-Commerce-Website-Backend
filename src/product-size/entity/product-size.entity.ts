@@ -7,12 +7,12 @@ export class ProductSize {
    @PrimaryGeneratedColumn()
    id: number;
 
-   @ManyToOne(() => Product, (product) => product.productSizes, { eager: true })
+   @ManyToOne(() => Product, (product) => product.productSizes, { onDelete: 'CASCADE', eager: true })
    product: Product;
 
    @ManyToOne(() => Size, (size) => size.productSizes, { eager: true })
    size: Size;
 
-   @Column({default: 0})
+   @Column({ default: 0 })
    stock: number;
 }

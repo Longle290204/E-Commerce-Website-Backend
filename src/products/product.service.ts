@@ -21,10 +21,16 @@ export class ProductService {
       private readonly productSizeService: ProductSizeService,
    ) {}
 
-   async createProduct(createProductDto: CreateProductDto, image: Express.Multer.File): Promise<Product> {
+   async createProduct(
+      createProductDto: CreateProductDto,
+      mainImageFile: Express.Multer.File,
+      hoverImageFile?: Express.Multer.File,
+   ): Promise<Product> {
       const { name, price, categoryId, status, mainCategoryId, sizeIds } = createProductDto;
 
-      const mainImage = `http://localhost:3002/uploads/${image.filename}`;
+      const mainImage = `http://localhost:3002/uploads/${mainImageFile.filename}`;
+
+      const hoverImage = `http://localhost:3002/uploads/${hoverImageFile.filename}` || null;
 
       const categories = await this.categoryRepository.find({
          where: { id: In(categoryId || []) },
@@ -58,6 +64,7 @@ export class ProductService {
          name,
          price,
          mainImage,
+         hoverImage,
          categories,
          status,
          mainCategory,

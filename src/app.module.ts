@@ -12,6 +12,9 @@ import { ProductSizeModule } from './product-size/product-size.module';
 import { SuperAdminModule } from './auth/super-admin/super-admin.module';
 import { SizeModule } from './size/size.module';
 import { FavoriteProductModule } from './favorite_product/favorite_product.module';
+import { BreadcrumbModule } from './Breadcrumb/Breadcrumb.module';
+import { OrderModule } from './order/order.module';
+import { PaymentModule } from './Payment/Payment.module';
 
 @Module({
    imports: [
@@ -33,6 +36,9 @@ import { FavoriteProductModule } from './favorite_product/favorite_product.modul
       SizeModule,
       SuperAdminModule,
       AuthModule,
+      BreadcrumbModule,
+      OrderModule,
+      PaymentModule,
       TypeOrmModule.forRootAsync({
          imports: [ConfigModule],
          inject: [ConfigService],

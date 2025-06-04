@@ -7,7 +7,7 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('super-admin')
-@UseGuards(RolesGuard)
+@UseGuards(AuthGuard('jwt'), RolesGuard)
 export class SuperAdminController {
    constructor(private superAdminService: SuperAdminService) {}
 

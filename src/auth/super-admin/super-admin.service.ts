@@ -29,7 +29,7 @@ export class SuperAdminService implements OnModuleInit {
             const newRole = this.roleRepository.create({ name: roleName });
             await this.roleRepository.save(newRole);
          }
-      }
+      } 
 
       let superAdminRole = await this.roleRepository.findOne({ where: { name: 'super-admin' } });
       const superAdmin = await this.userRepository.findOne({ where: { role: superAdminRole } });

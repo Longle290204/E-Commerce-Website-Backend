@@ -29,6 +29,9 @@ export class Product {
    @Column()
    mainImage: string;
 
+   @Column()
+   hoverImage: string;
+
    @Column({ type: 'varchar', length: 255 })
    name: string;
 
@@ -52,7 +55,7 @@ export class Product {
    @OneToMany((_type) => Cart, (cart) => cart.product)
    cart: Cart[];
 
-   @OneToMany(() => ProductSize, (productSize) => productSize.product)
+   @OneToMany(() => ProductSize, (productSize) => productSize.product, { cascade: true, onDelete: 'CASCADE' })
    productSizes: ProductSize[];
 
    @OneToMany(() => FavoriteProduct, (favoriteProduct) => favoriteProduct.product)

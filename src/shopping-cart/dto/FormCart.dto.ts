@@ -15,9 +15,4 @@ export class FormCartDto {
    @IsNumber()
    @Type(() => Number)
    sizeId: number; // Số lượng sản phẩm trong giỏ hàng
-
-   // @IsNotEmpty()
-   // @IsNumber()
-   // @Type(() => Number)
-   // totalPrice: number;
 }

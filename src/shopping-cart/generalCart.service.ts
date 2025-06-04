@@ -100,9 +100,12 @@ export class GeneralCartService {
 
       const cartTotal = cartItems.reduce((total: number, item: Cart) => total + Number(item.totalPrice), 0);
 
+      const quantityProduct = cartItems.reduce((quantity: number, item: Cart) => quantity + Number(item.quantity), 0);
+
       const cartWrapper = {
          cartTotal,
          cartItems,
+         quantityProduct,
       };
 
       return cartWrapper;
@@ -187,7 +190,7 @@ export class GeneralCartService {
    // <--------- Input Quantity --------->
    async inputQuantity(userId: string, updateCartDto: UpdateCartDto): Promise<void> {
       const { quantity, productId, size } = updateCartDto;
-      
+
       await this.generalRepository
          .createQueryBuilder()
          .update(Cart)

@@ -2,6 +2,7 @@ import {
    Controller,
    Post,
    UploadedFile,
+   UploadedFiles,
    UseInterceptors,
    Body,
    Get,
@@ -12,6 +13,7 @@ import {
    UseGuards,
 } from '@nestjs/common';
 import { diskStorage } from 'multer';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateProductDto } from './dto/create~product.dto';
 import { ProductService } from './product.service';
@@ -27,7 +29,7 @@ export class ProductController {
 
    @Post()
    @UseInterceptors(
-      FileInterceptor('image', {
+      FilesInterceptor('images', 2, {
          storage: diskStorage({
             destination: './uploads',
          }),
@@ -35,13 +37,17 @@ export class ProductController {
    )
    async createProduct(
       @Body() createProductDto: CreateProductDto,
-      @UploadedFile() image: Express.Multer.File,
+      @UploadedFiles() images: Express.Multer.File,
    ): Promise<any> {
-      if (!image) {
+      if (!images) {
          throw new HttpException('File is required.', HttpStatus.BAD_REQUEST);
       }
+
+      const mainImage = images[0];
+      const hoverImage = images[1] || null;
+
       try {
-         const product = await this.productService.createProduct(createProductDto, image);
+         const product = await this.productService.createProduct(createProductDto, mainImage, hoverImage);
          return {
             statusCode: HttpStatus.CREATED,
             message: 'Product created successfully',
